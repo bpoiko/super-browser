@@ -1,6 +1,9 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 
+
+
+
 module.exports = {
   packagerConfig: {
     asar: true,
@@ -63,4 +66,16 @@ module.exports = {
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
   ],
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'bpoiko',
+          name: 'parker-miniplayer'
+        },
+        prerelease: false
+      }
+    }
+  ]
 };
