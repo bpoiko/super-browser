@@ -16,6 +16,7 @@ const elements = {
   reloadButton: document.getElementById('reload-button'),
   searchButton: document.getElementById('search-button'),
   goButton: document.getElementById('go-button'),
+  hubButton: document.getElementById('hub-button'),
   
   // URL input
   urlForm: document.getElementById('url-form'),
@@ -27,7 +28,13 @@ const elements = {
   errorOverlay: document.getElementById('error-overlay'),
   errorTitle: document.getElementById('error-title'),
   errorMessage: document.getElementById('error-message'),
-  retryButton: document.getElementById('retry-button')
+  retryButton: document.getElementById('retry-button'),
+  
+  // Streaming hub
+  hubModal: document.getElementById('hub-modal'),
+  hubClose: document.getElementById('hub-close'),
+  hubBackdrop: document.querySelector('.hub-backdrop'),
+  platformButtons: document.querySelectorAll('.platform-btn')
 };
 
 // ===== APPLICATION STATE =====
@@ -136,6 +143,37 @@ function showError(title, message) {
 function hideError() {
   state.lastError = null;
   elements.errorOverlay.classList.add('hidden');
+}
+
+/**
+ * Show streaming hub modal
+ */
+function showHub() {
+  elements.hubModal.classList.remove('hidden');
+  // Focus first platform button for keyboard navigation
+  const firstButton = elements.hubModal.querySelector('.platform-btn');
+  if (firstButton) {
+    setTimeout(() => firstButton.focus(), 100);
+  }
+}
+
+/**
+ * Hide streaming hub modal
+ */
+function hideHub() {
+  elements.hubModal.classList.add('hidden');
+  elements.hubButton.focus();
+}
+
+/**
+ * Navigate to streaming platform
+ */
+function navigateToPlatform(url) {
+  hideHub();
+  hideError();
+  elements.webview.src = url;
+  state.currentUrl = url;
+  elements.urlInput.value = url;
 }
 
 // ===== NAVIGATION FUNCTIONS =====
@@ -342,6 +380,22 @@ function handleKeyboardShortcuts(event) {
     event.preventDefault();
     elements.urlInput.select();
   }
+  
+  // Ctrl/Cmd + H: Toggle hub
+  if ((event.ctrlKey || event.metaKey) && event.key === 'h') {
+    event.preventDefault();
+    if (elements.hubModal.classList.contains('hidden')) {
+      showHub();
+    } else {
+      hideHub();
+    }
+  }
+  
+  // Escape: Close hub if open
+  if (event.key === 'Escape' && !elements.hubModal.classList.contains('hidden')) {
+    event.preventDefault();
+    hideHub();
+  }
 }
 
 // ===== EVENT LISTENER SETUP =====
@@ -356,9 +410,24 @@ function initializeEventListeners() {
   elements.reloadButton.addEventListener('click', reloadOrStop);
   elements.searchButton.addEventListener('click', handleSearch);
   elements.goButton.addEventListener('click', handleFormSubmit);
+  elements.hubButton.addEventListener('click', showHub);
   
   // Error retry
   elements.retryButton.addEventListener('click', retryNavigation);
+  
+  // Hub modal controls
+  elements.hubClose.addEventListener('click', hideHub);
+  elements.hubBackdrop.addEventListener('click', hideHub);
+  
+  // Platform buttons
+  elements.platformButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const url = button.getAttribute('data-url');
+      if (url) {
+        navigateToPlatform(url);
+      }
+    });
+  });
   
   // Webview events
   elements.webview.addEventListener('did-navigate', handleDidNavigate);
