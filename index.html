@@ -1,23 +1,99 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Always On Top Miniviewer</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Super Browser - Always On Top</title>
   </head>
   <body>
-    <div id="browser-tools" style="display: flex; width:100vw">
-      <div id="button-container">
-        <button id="back-button">&larr;</button>
-        <button id="forward-button>">&rarr;</button>
-        <button id="reload-button">&#8881;</button>
-        <button id="search-button">&#x1F50D;</button>
-        <button id="new-window-button">+</button>
+    <nav id="browser-toolbar" class="toolbar">
+      <div id="navigation-controls" class="nav-controls">
+        <button 
+          id="back-button" 
+          class="nav-btn" 
+          aria-label="Go back"
+          title="Back (Alt+Left)"
+          disabled>
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <button 
+          id="forward-button" 
+          class="nav-btn" 
+          aria-label="Go forward"
+          title="Forward (Alt+Right)"
+          disabled>
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+        <button 
+          id="reload-button" 
+          class="nav-btn" 
+          aria-label="Reload page"
+          title="Reload (Ctrl+R)">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+          </svg>
+        </button>
       </div>
-      <form><input id="url-input" required></form>
-      <button id="go">Go</button>
-    </div>
-    <webview id="webview"></webview>
+
+      <form id="url-form" class="url-form">
+        <div class="url-input-wrapper">
+          <svg class="lock-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <input 
+            id="url-input" 
+            class="url-input"
+            type="text"
+            placeholder="Search or enter website..."
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="URL or search query" />
+          <button 
+            id="search-button" 
+            class="search-btn" 
+            type="button"
+            aria-label="Search"
+            title="Search Google">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+          </button>
+        </div>
+        <button 
+          id="go-button" 
+          class="go-btn" 
+          type="submit"
+          aria-label="Navigate">Go</button>
+      </form>
+    </nav>
+
+    <div id="loading-bar" class="loading-bar"></div>
+    
+    <main id="content-area" class="content-area">
+      <webview 
+        id="webview" 
+        class="webview"
+        partition="persist:main"></webview>
+      <div id="error-overlay" class="error-overlay hidden">
+        <div class="error-content">
+          <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" stroke-width="2" fill="none">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <h2 id="error-title">Unable to Load Page</h2>
+          <p id="error-message">Check your connection and try again</p>
+          <button id="retry-button" class="retry-btn">Retry</button>
+        </div>
+      </div>
+    </main>
+
     <script type="module" src="/src/renderer.js"></script>
   </body>
 </html>
